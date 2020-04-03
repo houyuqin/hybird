@@ -51,7 +51,7 @@ export default class Login extends Component {
             AsyncStorage.setItem('user',JSON.stringify(res))
                 .then(()=>{
                     this.setState({isloading:false})
-                    Actions.home();
+                    Actions.homePage();
                 })
           }
           else{

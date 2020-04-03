@@ -17,7 +17,6 @@ const App = () => {
 	let [isLogin,setLogin] = useState(false);
 	let [isInstall,setInstall] = useState(true);
 	let now = 0;
-	
 	let init = ()=>{
 		AsyncStorage.getItem('isInstall')
 		.then(res=>{
@@ -36,6 +35,7 @@ const App = () => {
 			if(user){
 				setLogin(true);
 				SplashScreen.hide();
+				
 			}
 		})
 	}
@@ -56,12 +56,18 @@ const App = () => {
 		<Router
 			backAndroidHandler={()=>{
 				if(Actions.currentScene == 'login'){
-					Actions.login();
-				}else{
-					if(Actions.currentScene != 'home'){
-						Actions.pop();
-						return true;
+					// console.log('11');
+					Actions.reset('login');
+					if(new Date().getTime()-now<2000){
+						BackHandler.exitApp();
 					}else{
+						ToastAndroid.show('确定要退出吗',100);
+						now = new Date().getTime();
+						return true;
+					}
+				}else {
+					if(Actions.currentScene == 'home'){
+						// console.log('22');
 						if(new Date().getTime()-now<2000){
 							BackHandler.exitApp();
 						}else{
@@ -69,90 +75,80 @@ const App = () => {
 							now = new Date().getTime();
 							return true;
 						}
+					}else{
+						Actions.pop();
+						return true;
 					}
 				}
 			}}
 		>
 			<Overlay>
-			<Modal key="modal" hideNavBar>
-				
-				<Lightbox key="lightbox">
-				<Scene key="root">
-        <Tabs 
-          key='tabbar'
-          hideNavBar
-          title='首页'
-          activeTintColor="red"
-          inactiveTintColor="grey"
-          tabBarStyle={{backgroundColor:'#ccc'}}
-          
-        >
-          {/* Home栏 */}
-          <Scene 
-            key='home'
-            hideNavBar
-            icon={
-              ({focused})=>
-              <Icon 
-              	color={focused?'red':'grey'} 
-                name="home"
-                size={30}
-              />
-            }
-            component={Home}
-          >
-          </Scene>
-          {/* 商品分类栏 */}
-          <Scene key='goods'
-            hideNavBar
-            title='商品分类'
-            icon={
-              ({focused})=>
-              <Icon 
-              	color={focused?'red':'grey'} 
-                name="appstore"
-                size={30}
-              />
-            }
-            component={Good}
-          ></Scene>
-          {/* 个人中心栏 */}
-          <Scene 
-			key='mine'
-			title='我的'
-            // initial
-            icon={
-              ({focused})=>
-              <Icon 
-                color={focused?'red':'grey'}
-                name="user" 
-                size={30} 
-              />
-            }
-          >
-            <Scene 
-              key='mine' 
-              hideNavBar
-              component={Mine}
-            /> 
-            <Scene 
-              key='fabu'
-              hideNavBar
-              hideTabBar
-              title='我的发布'
-              component={Fabu}
-            /> 
-          </Scene>
-          </Tabs>
-          </Scene>
-				</Lightbox>
+				<Modal key="modal" hideNavBar>
+					<Lightbox key="lightbox">
+						<Scene key="root">
+							<Tabs 
+								key='tabbar'
+								hideNavBar
+								activeTintColor="red"
+								inactiveTintColor="blue"
+								tabBarStyle={{backgroundColor:'#ccc'}}
+							>
+								{/* Home栏 */}
+								<Scene key='homePage'
+									title='首页'
+									hideNavBar
+									icon={
+										({focused})=><Icon 
+											color={focused?'red':'blue'} 
+											name="home"
+										/>
+									}
+								>
+									<Scene key='home' 
+										component={Home}
+									/>
+								</Scene>
+								{/* 商品分类栏 */}
+								<Scene 
+									key='goodsPage'
+									hideNavBar
+									title='商品分类'
+									icon={
+										({focused})=><Icon 
+											color={focused?'red':'blue'} 
+											name="file"
+										/>
+									}
+									
+								>
+									<Scene key="goods" component={Good}/>
+								</Scene>
+								{/* 用户中心 */}
+								<Scene 
+									key='userPage'
+									hideNavBar
+									// hideDrawerButton
+									icon={({focused})=>
+										<Icon 
+											color={focused?'red':'blue'} 
+											name='file'/>
+										}
+									title="用户中心"
+								>
+								<Scene key='mine' hideNavBar component={Mine} />
+								<Scene key='fabu' hideNavBar hideTabBar title='我的发布' component={Fabu} />
+								</Scene>
+								
+							</Tabs>
+						</Scene>
+					</Lightbox>
 
-				<Scene initial={!isLogin} key="login" component={Login}/>
-				<Scene key="register" component={Register}/>
+					<Scene initial={!isLogin} key="login" component={Login}/>
+					<Scene key="register" component={Register}/>
 
 				{/* <Scene key="login" component={ShowMyName}/> */}
 				{/* <Scene key="login1" component={Login}/> */}
-			</Modal>
+				</Modal>
 			{/* <Scene component={Message}/> */}
 			</Overlay>
 		</Router>
